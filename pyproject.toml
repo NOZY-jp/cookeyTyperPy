@@ -1,0 +1,27 @@
+[project]
+name = "cookeytyperpy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.basedpyright]
+typeCheckingMode = "strict"
+reportMissingParameterType = true
+reportMissingTypeStubs = true
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "ANN", # ANNを追加
+  "I",   # isort
+]
+
+[tool.ruff.lint.flake8-annotations]
+ignore-fully-untyped = false
+suppress-dummy-args = true
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
