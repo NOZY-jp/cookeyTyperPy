@@ -223,6 +223,7 @@ class Handler:
                                 )
 
                         print("=" * 70)
+                        print(f"Current Cookie Count: {int(self.engine.cookies)}")
                     case Operations.LA:
                         header = f"| {'Name':<16} | {'Owned':^6} | {'Unit CPS':>10} | {'CPS':>10} | {'Cost':>15} | {'Description'}"
                         total_width = 95
@@ -256,6 +257,7 @@ class Handler:
                                 )
 
                         print("=" * total_width)
+                        print(f"Current Cookie Count: {int(self.engine.cookies)}")
 
                     case Operations.DETAIL:
                         target = command.target
