@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 from cookeyTyperData import random_sentence
 from cookeyTyperModels import into_facility, into_upgrade
+from cookeyTyperUtils import format_cookies, format_cps
 from cookeyTyperTypes import (
     Command,
     CommandFacility,
@@ -215,7 +216,8 @@ class Handler:
       ls         : List available upgrades
       la         : List all upgrades (with status)
       buy (b)    : Buy an upgrade
-                   Ex: 'u buy reinforced_index_finger'
+                   Ex: 'u buy reinforced index finger'
+                   Names work with spaces or underscores
       detail (d) : Show detailed stats of an upgrade
 
   help (h, ?)       : Show this help message
@@ -238,9 +240,9 @@ class Handler:
                     return upgrade_handler(command)
                 return False
             case CommandInspectCookieCount():
-                print(f"Current Cookie Count: {int(self.engine.cookies)}")
+                print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
             case CommandInspectCookiePerSecond():
-                print(f"Current Cookie Per Second: {self.engine.cps}")
+                print(f"Current Cookie Per Second: {format_cps(self.engine.cps)}")
             case CommandInspectCookiePerType():
                 print(f"Current Cookie Per Type: {self.engine.cpt}")
             case CommandUserInput():
@@ -253,7 +255,7 @@ class Handler:
                     * self.engine.global_multipliers["cpt"]
                 )
                 print(f"You typed {accurate_typing} characters correctly and")
-                print(f"earned {int(cookies_gain)} cookies!")
+                print(f"earned {format_cookies(cookies_gain)}!")
                 self.engine.delta_cookie(cookies_gain, CookieSource.TYPING)
 
             case _:
@@ -262,62 +264,67 @@ class Handler:
         return True
 
     def _handle_facility_ls(self, command: CommandFacility) -> bool:
-        header = f"| {'Name':<16} | {'Owned':^6} | {'Cost':>15} | {'Description'}"
+        header = f"| {'Name':<16} | {'Owned':^6} | {'Cost':>20} | {'Description'}"
 
         print(f"{'=' * 27} Facility  List {'=' * 27}")
         print(header)
-        print("-" * 70)
+        print("-" * 75)
 
         for facility in self.engine.facilities.values():
-            cost_str = f"{int(facility.next_cost())}"
+            cost_str = format_cookies(facility.next_cost(), show_unit=False)
             if facility.visual_state == VisualState.SHOWN:
                 print(
                     f"| {facility.name:<16} "
                     f"| {facility.amount:^6} "
-                    f"| {cost_str:>15} "
+                    f"| {cost_str:>20} "
                     f"| {facility.description}"
                 )
             elif facility.visual_state == VisualState.COVERED:
-                print(f"| {'---':<16} | {'-':^6} | {cost_str:>15} | {'---'}")
+                print(f"| {'---':<16} | {'-':^6} | {cost_str:>20} | {'---'}")
 
-        print("=" * 70)
-        print(f"Current Cookie Count: {int(self.engine.cookies)}")
+        print("=" * 75)
+        print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
         return True
 
     def _handle_facility_la(self, command: CommandFacility) -> bool:
-        header = f"| {'Name':<16} | {'Owned':^6} | {'Unit CPS':>10} | {'CPS':>10} | {'Cost':>15} | {'Description'}"
-        total_width = 95
+        header = f"| {'Name':<16} | {'Owned':^6} | {'Unit CPS':>12} | {'CPS':>12} | {'Cost':>20} | {'Description'}"
+        total_width = 105
 
-        print(f"{'=' * 39}  Facility List  {'=' * 39}")
+        print(f"{'=' * 44}  Facility List  {'=' * 44}")
         print(header)
         print("-" * total_width)
 
         for facility in self.engine.facilities.values():
-            cost_str = f"{int(facility.next_cost()):,}"
+            cost_str = format_cookies(facility.next_cost(), show_unit=False)
 
             if facility.visual_state == VisualState.SHOWN:
-                unit_cps_str = f"{facility.cps / facility.amount if facility.amount > 0 else facility.base_cps:.1f}"
-                cps_str = f"{facility.cps:.1f}"
+                unit_cps = (
+                    facility.cps / facility.amount
+                    if facility.amount > 0
+                    else facility.base_cps
+                )
+                unit_cps_str = format_cps(unit_cps).replace(" cps", "")
+                cps_str = format_cps(facility.cps).replace(" cps", "")
                 print(
                     f"| {facility.name:<16} "
                     f"| {facility.amount:^6} "
-                    f"| {unit_cps_str:>10} "
-                    f"| {cps_str:>10} "
-                    f"| {cost_str:>15} "
+                    f"| {unit_cps_str:>12} "
+                    f"| {cps_str:>12} "
+                    f"| {cost_str:>20} "
                     f"| {facility.description}"
                 )
             elif facility.visual_state == VisualState.COVERED:
                 print(
                     f"| {facility.name:<16} "
                     f"| {'-':^6} "
-                    f"| {'-':>10} "
-                    f"| {'-':>10} "
-                    f"| {cost_str:>15} "
+                    f"| {'-':>12} "
+                    f"| {'-':>12} "
+                    f"| {cost_str:>20} "
                     f"| {'???'}"
                 )
 
         print("=" * total_width)
-        print(f"Current Cookie Count: {int(self.engine.cookies)}")
+        print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
         return True
 
     def _handle_facility_detail(self, command: CommandFacility) -> bool:
@@ -346,9 +353,9 @@ class Handler:
             print(f" Owned       : {facility.amount}")
             unit_cps = facility.base_cps
             total_cps = facility.cps
-            print(f" Base CPS    : {unit_cps:.1f} / unit")
-            print(f" Total CPS   : {total_cps:,.1f} (Contribution)")
-            print(f" Next Cost   : {int(facility.next_cost()):,} cookies")
+            print(f" Base CPS    : {format_cps(unit_cps).replace(' cps', '')} / unit")
+            print(f" Total CPS   : {format_cps(total_cps)} (Contribution)")
+            print(f" Next Cost   : {format_cookies(facility.next_cost())}")
             print(f"{'=' * 61}\n")
         elif facility.visual_state == VisualState.COVERED:
             print(f"\n{'=' * 22} Facility Detail {'=' * 22}")
@@ -358,7 +365,7 @@ class Handler:
             print(" Owned       : -")
             print(" Base CPS    : 0.0 / unit")
             print(" Total CPS   : 0.0 (Contribution)")
-            print(f" Next Cost   : {int(facility.next_cost()):,} cookies")
+            print(f" Next Cost   : {format_cookies(facility.next_cost())}")
             print(f"{'=' * 61}\n")
         else:
             print("Invalid Facility Name")
@@ -403,12 +410,12 @@ class Handler:
         if self.engine.delta_cookie(cost_value, CookieSource.FACILITY_PURCHASE):
             facility.delta_amount(amount)
             print(
-                f"Purchased {(str(amount) + ' ') if amount == 1 else ''}{target.name} for {abs(cost_value)} cookies"
+                f"Purchased {(str(amount) + ' ') if amount == 1 else ''}{target.name} for {format_cookies(abs(cost_value))}"
             )
         else:
             print("Not enough cookies!")
-            print(f"Cost: {abs(cost_value)}")
-            print(f"Current Cookies: {self.engine.cookies}")
+            print(f"Cost: {format_cookies(abs(cost_value))}")
+            print(f"Current Cookies: {format_cookies(self.engine.cookies)}")
         return True
 
     def _handle_facility_sell(self, command: CommandFacility) -> bool:
@@ -449,29 +456,28 @@ class Handler:
 
         facility.delta_amount(-amount)
         self.engine.delta_cookie(refund_value, CookieSource.FACILITY_PURCHASE)
-        print(f"Sold {amount} {target.name}(s) for {refund_value} cookies")
+        print(f"Sold {amount} {target.name}(s) for {format_cookies(refund_value)}")
         return True
 
     def _handle_upgrade_ls(self, command: CommandUpgrade) -> bool:
         print(f"{'=' * 27} Available Upgrades {'=' * 27}")
-        header = f"| {'Name':<30} | {'Price':>12} | {'Description'}"
+        header = f"| {'Name':<30} | {'Price':>20} | {'Description'}"
         print(header)
-        print("-" * 74)
+        print("-" * 80)
 
         for upgrade in self.engine.available_upgrades:
-            print(
-                f"| {upgrade.name:<30} | {upgrade.price:>12,} | {upgrade.description}"
-            )
+            price_str = format_cookies(upgrade.price, show_unit=False)
+            print(f"| {upgrade.name:<30} | {price_str:>20} | {upgrade.description}")
 
-        print("=" * 74)
-        print(f"Current Cookie Count: {int(self.engine.cookies)}")
+        print("=" * 80)
+        print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
         return True
 
     def _handle_upgrade_la(self, command: CommandUpgrade) -> bool:
         print(f"{'=' * 27} All Upgrades {'=' * 27}")
-        header = f"| {'Name':<30} | {'Price':>12} | {'Status':^10} | {'Description'}"
+        header = f"| {'Name':<30} | {'Price':>20} | {'Status':^10} | {'Description'}"
         print(header)
-        print("-" * 90)
+        print("-" * 95)
 
         for upgrade in self.engine.upgrades.values():
             if upgrade.is_purchased:
@@ -481,15 +487,16 @@ class Handler:
             else:
                 status = "Locked"
 
+            price_str = format_cookies(upgrade.price, show_unit=False)
             print(
                 f"| {upgrade.name:<30} "
-                f"| {upgrade.price:>12,} "
+                f"| {price_str:>20} "
                 f"| {status:^10} "
                 f"| {upgrade.description}"
             )
 
-        print("=" * 90)
-        print(f"Current Cookie Count: {int(self.engine.cookies)}")
+        print("=" * 95)
+        print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
         return True
 
     def _handle_upgrade_detail(self, command: CommandUpgrade) -> bool:
@@ -507,7 +514,7 @@ class Handler:
         print(f" Name        : {upgrade.name}")
         print(f" Description : {upgrade.description}")
         print("-" * 61)
-        print(f" Price       : {upgrade.price:,} cookies")
+        print(f" Price       : {format_cookies(upgrade.price)}")
         status = (
             "Owned"
             if upgrade.is_purchased

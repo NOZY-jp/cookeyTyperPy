@@ -168,8 +168,11 @@ def into_facility(arg: str) -> Result[FacilityTypes, str]:
 def into_upgrade(arg: str) -> Result[UpgradeTypes, str]:
     from cookeyTyperData import upgrades
 
+    # Normalize user input: lowercase, replace spaces/hyphens with underscores
+    normalized_arg = arg.lower().replace(" ", "_").replace("-", "_")
+
     for upgrade_type, config in upgrades().items():
         name = config["name"].lower().replace(" ", "_").replace("-", "_")
-        if name == arg.lower() or upgrade_type.name.lower() == arg.lower():
+        if name == normalized_arg or upgrade_type.name.lower() == normalized_arg:
             return Ok(upgrade_type)
     return Err("Invalid Upgrade Name")
