@@ -1,11 +1,16 @@
 import threading
 import time
 
-from cookeyTyperData import parameters
+from cookeyTyperData import parameters, upgrades
 from cookeyTyperHandler import Handler
-from cookeyTyperModels import Facility, get_facilities
+from cookeyTyperModels import Facility, Upgrade, get_facilities
 from cookeyTyperStats import CookeyTyperStats
-from cookeyTyperTypes import CookieSource, FacilityTypes
+from cookeyTyperSystems import (
+    UnlockManager,
+    UpgradeManager,
+    create_upgrade_from_config,
+)
+from cookeyTyperTypes import CookieSource, FacilityTypes, UpgradeTypes
 
 
 class CookeyTyper:
@@ -22,7 +27,19 @@ class CookeyTyper:
             "cps": 1.0,
         }
         self.global_discount: float = 0.0
+
+        self.upgrades: dict[UpgradeTypes, Upgrade] = self._init_upgrades()
+        self.available_upgrades: list[Upgrade] = []
+
+        self.unlock_manager: UnlockManager = UnlockManager(self)
+        self.upgrade_manager: UpgradeManager = UpgradeManager(self)
         self.handler: Handler = Handler(self)
+
+    def _init_upgrades(self) -> dict[UpgradeTypes, Upgrade]:
+        upgrade_dict: dict[UpgradeTypes, Upgrade] = {}
+        for upgrade_type in upgrades():
+            upgrade_dict[upgrade_type] = create_upgrade_from_config(upgrade_type, self)
+        return upgrade_dict
 
     def delta_cookie(self, amount: float, source: CookieSource) -> bool:
         with self.lock:
@@ -34,11 +51,11 @@ class CookeyTyper:
                 return False
 
     def update_cps(self) -> float:
-        sum: float = 0.0
+        total: float = 0.0
         for facility in self.facilities.values():
-            sum += facility.cps()
+            total += facility.cps
         calibrated_cps: float = (
-            sum * self.global_multipliers["global"] * self.global_multipliers["cps"]
+            total * self.global_multipliers["global"] * self.global_multipliers["cps"]
         )
         self.cps = calibrated_cps
         return self.cps
@@ -48,6 +65,7 @@ class CookeyTyper:
         while True:
             self.handler.update()
             self.stats.update()
+            self.unlock_manager.check_unlocks()
             self.update_cps()
 
             self.delta_cookie(

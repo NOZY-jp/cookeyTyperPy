@@ -1,11 +1,113 @@
 from random import choice
 
-from cookeyTyperTypes import (FacilityConfig, FacilityTypes, Parameters,
-                              VisualState)
+from cookeyTyperTypes import (
+    EffectType,
+    FacilityConfig,
+    FacilityTypes,
+    Parameters,
+    UpgradeConfig,
+    UpgradeTypes,
+    VisualState,
+)
 
 
 def parameters() -> Parameters:
     return {"facility_cost_multiplier_by_amount": 1.15, "tick_rate": 20}
+
+
+def upgrades() -> dict[UpgradeTypes, UpgradeConfig]:
+    return {
+        UpgradeTypes.REINFORCED_INDEX_FINGER: {
+            "name": "Reinforced index finger",
+            "description": "The keyboard gains +1 base CPS.",
+            "price": 100,
+            "target": FacilityTypes.KEYBOARD,
+            "effect_type": EffectType.ADD,
+            "value": 1.0,
+            "unlock_facility": FacilityTypes.KEYBOARD,
+            "unlock_count": 1,
+        },
+        UpgradeTypes.CARPAL_TUNNEL_PREVENTION: {
+            "name": "Carpal tunnel prevention cream",
+            "description": "The keyboard gains +1 base CPS.",
+            "price": 500,
+            "target": FacilityTypes.KEYBOARD,
+            "effect_type": EffectType.ADD,
+            "value": 1.0,
+            "unlock_facility": FacilityTypes.KEYBOARD,
+            "unlock_count": 1,
+        },
+        UpgradeTypes.AMBIDEXTROUS: {
+            "name": "Ambidextrous",
+            "description": "The keyboard is twice as efficient.",
+            "price": 10000,
+            "target": FacilityTypes.KEYBOARD,
+            "effect_type": EffectType.MULTIPLIER,
+            "value": 2.0,
+            "unlock_facility": FacilityTypes.KEYBOARD,
+            "unlock_count": 10,
+        },
+        UpgradeTypes.FORWARD_FROM_GRANDMA: {
+            "name": "Forwards from grandma",
+            "description": "Grandmas gain +1 base CPS.",
+            "price": 1000,
+            "target": FacilityTypes.GRANDMA,
+            "effect_type": EffectType.ADD,
+            "value": 1.0,
+            "unlock_facility": FacilityTypes.GRANDMA,
+            "unlock_count": 1,
+        },
+        UpgradeTypes.STEEL_PLATED_ROLLING_PINS: {
+            "name": "Steel-plated rolling pins",
+            "description": "Grandmas are twice as efficient.",
+            "price": 5000,
+            "target": FacilityTypes.GRANDMA,
+            "effect_type": EffectType.MULTIPLIER,
+            "value": 2.0,
+            "unlock_facility": FacilityTypes.GRANDMA,
+            "unlock_count": 5,
+        },
+        UpgradeTypes.CHEAP_HOES: {
+            "name": "Cheap hoes",
+            "description": "Farms gain +4 base CPS.",
+            "price": 11000,
+            "target": FacilityTypes.FARM,
+            "effect_type": EffectType.ADD,
+            "value": 4.0,
+            "unlock_facility": FacilityTypes.FARM,
+            "unlock_count": 1,
+        },
+        UpgradeTypes.FERTILIZER: {
+            "name": "Fertilizer",
+            "description": "Farms are twice as efficient.",
+            "price": 55000,
+            "target": FacilityTypes.FARM,
+            "effect_type": EffectType.MULTIPLIER,
+            "value": 2.0,
+            "unlock_facility": FacilityTypes.FARM,
+            "unlock_count": 5,
+        },
+        UpgradeTypes.SUGAR_GAS: {
+            "name": "Sugar gas",
+            "description": "Mines gain +23 base CPS.",
+            "price": 120000,
+            "target": FacilityTypes.MINE,
+            "effect_type": EffectType.ADD,
+            "value": 23.0,
+            "unlock_facility": FacilityTypes.MINE,
+            "unlock_count": 1,
+        },
+        UpgradeTypes.MEGADRILL: {
+            "name": "Megadrill",
+            "description": "Mines are twice as efficient.",
+            "price": 600000,
+            "target": FacilityTypes.MINE,
+            "effect_type": EffectType.MULTIPLIER,
+            "value": 2.0,
+            "unlock_facility": FacilityTypes.MINE,
+            "unlock_count": 5,
+        },
+    }
 
 
 def facilities() -> dict[FacilityTypes, FacilityConfig]:

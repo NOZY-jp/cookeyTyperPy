@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from cookeyTyperData import FacilityConfig, FacilityTypes, facilities
-from cookeyTyperTypes import CookieSource, VisualState
+from cookeyTyperData import facilities
+from cookeyTyperTypes import CookieSource, FacilityConfig, FacilityTypes, VisualState
 
 if TYPE_CHECKING:
     from cookeyTyperCore import CookeyTyper

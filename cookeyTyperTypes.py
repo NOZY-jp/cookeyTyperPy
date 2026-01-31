@@ -3,6 +3,9 @@ from enum import Enum, auto
 from typing import Literal, TypedDict, Union
 
 
+type EffectTarget = "FacilityTypes | Literal['Global'] | Literal['Click']"
+
+
 class CookieSource(Enum):
     ELSE = 1
     TYPING = 2
@@ -40,6 +43,29 @@ class FacilityTypes(Enum):
     YOU = auto()
 
 
+class UpgradeTypes(Enum):
+    REINFORCED_INDEX_FINGER = auto()
+    CARPAL_TUNNEL_PREVENTION = auto()
+    AMBIDEXTROUS = auto()
+    FORWARD_FROM_GRANDMA = auto()
+    STEEL_PLATED_ROLLING_PINS = auto()
+    CHEAP_HOES = auto()
+    FERTILIZER = auto()
+    SUGAR_GAS = auto()
+    MEGADRILL = auto()
+
+
+class ModifierSourceType(Enum):
+    UPGRADE = auto()
+    ACHIEVEMENT = auto()
+    BUFF = auto()
+
+
+class EffectType(Enum):
+    ADD = auto()
+    MULTIPLIER = auto()
+
+
 class FacilityConfig(TypedDict):
     name: str
     description: str
@@ -48,17 +74,20 @@ class FacilityConfig(TypedDict):
     init_visual: VisualState
 
 
-class UpgradeTypes(Enum):
-    REINFORCED_INDEX_FINGER = auto()
+class UpgradeConfig(TypedDict):
+    name: str
+    description: str
+    price: int
+    target: FacilityTypes | Literal["Global"] | Literal["Click"]
+    effect_type: EffectType
+    value: float
+    unlock_facility: FacilityTypes
+    unlock_count: int
 
 
 class Res(Enum):
     OK = 1
     ERR = 2
-
-
-class ModifierSourceType(Enum):
-    UPGRADE = auto()
 
 
 class Parameters(TypedDict):
