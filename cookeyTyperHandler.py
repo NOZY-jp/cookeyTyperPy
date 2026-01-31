@@ -9,12 +9,19 @@ if TYPE_CHECKING:
     from cookeyTyperCore import CookeyTyper
 
 from cookeyTyperData import random_sentence
-from cookeyTyperFacility import into_facility
-from cookeyTyperTypes import (Command, CommandFacility, CommandHelp,
-                              CommandInspectCookieCount,
-                              CommandInspectCookiePerSecond,
-                              CommandInspectCookiePerType, CommandUserInput,
-                              CookieSource, Operations, VisualState)
+from cookeyTyperModels import into_facility
+from cookeyTyperTypes import (
+    Command,
+    CommandFacility,
+    CommandHelp,
+    CommandInspectCookieCount,
+    CommandInspectCookiePerSecond,
+    CommandInspectCookiePerType,
+    CommandUserInput,
+    CookieSource,
+    Operations,
+    VisualState,
+)
 from result import Err, Ok, Result, is_err
 
 

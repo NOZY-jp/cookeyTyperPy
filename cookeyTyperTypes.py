@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, auto
 from typing import Literal, TypedDict, Union
 
 
@@ -18,26 +18,26 @@ class VisualState(Enum):
 
 
 class FacilityTypes(Enum):
-    KEYBOARD = 1
-    GRANDMA = 2
-    FARM = 3
-    MINE = 4
-    FACTORY = 5
-    BANK = 6
-    TEMPLE = 7
-    WIZARD_TOWER = 8
-    SHIPMENT = 9
-    ALCHEMY_LAB = 10
-    PORTAL = 11
-    TIME_MACHINE = 12
-    ANTIMATTER_CONDENSER = 13
-    PRISM = 14
-    CHANCE_MAKER = 15
-    FRACTAL_ENGINE = 16
-    PYTHON_CONSOLE = 17
-    IDLEVERSE = 18
-    CORTEX_BAKER = 19
-    YOU = 20
+    KEYBOARD = auto()
+    GRANDMA = auto()
+    FARM = auto()
+    MINE = auto()
+    FACTORY = auto()
+    BANK = auto()
+    TEMPLE = auto()
+    WIZARD_TOWER = auto()
+    SHIPMENT = auto()
+    ALCHEMY_LAB = auto()
+    PORTAL = auto()
+    TIME_MACHINE = auto()
+    ANTIMATTER_CONDENSER = auto()
+    PRISM = auto()
+    CHANCE_MAKER = auto()
+    FRACTAL_ENGINE = auto()
+    PYTHON_CONSOLE = auto()
+    IDLEVERSE = auto()
+    CORTEX_BAKER = auto()
+    YOU = auto()
 
 
 class FacilityConfig(TypedDict):
@@ -49,12 +49,16 @@ class FacilityConfig(TypedDict):
 
 
 class UpgradeTypes(Enum):
-    REINFORCED_INDEX_FINGER = 1
+    REINFORCED_INDEX_FINGER = auto()
 
 
 class Res(Enum):
     OK = 1
     ERR = 2
+
+
+class ModifierSourceType(Enum):
+    UPGRADE = auto()
 
 
 class Parameters(TypedDict):

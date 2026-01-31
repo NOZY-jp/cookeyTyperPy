@@ -2,8 +2,8 @@ import threading
 import time
 
 from cookeyTyperData import parameters
-from cookeyTyperFacility import Facility, get_facilities
 from cookeyTyperHandler import Handler
+from cookeyTyperModels import Facility, get_facilities
 from cookeyTyperStats import CookeyTyperStats
 from cookeyTyperTypes import CookieSource, FacilityTypes
 
