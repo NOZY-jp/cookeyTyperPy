@@ -32,7 +32,7 @@ def format_cookies(value: float | int, show_unit: bool = True) -> str:
 
     int_value = int(value)
 
-    if int_value < 1000:
+    if int_value < 1_000_000:
         result = str(int_value)
     else:
         suffix_index = 0

@@ -10,20 +10,13 @@ if TYPE_CHECKING:
 
 from cookeyTyperData import random_sentence
 from cookeyTyperModels import into_facility, into_upgrade
+from cookeyTyperTypes import (Command, CommandFacility, CommandHelp,
+                              CommandInspectCookieCount,
+                              CommandInspectCookiePerSecond,
+                              CommandInspectCookiePerType, CommandUpgrade,
+                              CommandUserInput, CookieSource, Operations,
+                              VisualState)
 from cookeyTyperUtils import format_cookies, format_cps
-from cookeyTyperTypes import (
-    Command,
-    CommandFacility,
-    CommandHelp,
-    CommandInspectCookieCount,
-    CommandInspectCookiePerSecond,
-    CommandInspectCookiePerType,
-    CommandUpgrade,
-    CommandUserInput,
-    CookieSource,
-    Operations,
-    VisualState,
-)
 from result import Err, Ok, Result, is_err
 
 
@@ -157,7 +150,8 @@ class Handler:
             case ["facility" | "fac" | "f"]:
                 return Ok(CommandFacility(operation=Operations.LS))
 
-            case ["upgrade" | "upg" | "u", op_str, target_str]:
+            case ["upgrade" | "upg" | "u", op_str, *target_args] if target_args:
+                target_str = " ".join(target_args)
                 op = self.parse_operation(op_str)
                 if is_err(op):
                     return Err(op.error)
@@ -214,7 +208,6 @@ class Handler:
   upgrade (u, upg)  : Manage upgrades
     <operations>
       ls         : List available upgrades
-      la         : List all upgrades (with status)
       buy (b)    : Buy an upgrade
                    Ex: 'u buy reinforced index finger'
                    Names work with spaces or underscores
@@ -474,28 +467,16 @@ class Handler:
         return True
 
     def _handle_upgrade_la(self, command: CommandUpgrade) -> bool:
-        print(f"{'=' * 27} All Upgrades {'=' * 27}")
-        header = f"| {'Name':<30} | {'Price':>20} | {'Status':^10} | {'Description'}"
+        print(f"{'=' * 27} Available Upgrades {'=' * 27}")
+        header = f"| {'Name':<30} | {'Price':>20} | {'Description'}"
         print(header)
-        print("-" * 95)
+        print("-" * 80)
 
-        for upgrade in self.engine.upgrades.values():
-            if upgrade.is_purchased:
-                status = "Owned"
-            elif upgrade in self.engine.available_upgrades:
-                status = "Available"
-            else:
-                status = "Locked"
-
+        for upgrade in self.engine.available_upgrades:
             price_str = format_cookies(upgrade.price, show_unit=False)
-            print(
-                f"| {upgrade.name:<30} "
-                f"| {price_str:>20} "
-                f"| {status:^10} "
-                f"| {upgrade.description}"
-            )
+            print(f"| {upgrade.name:<30} | {price_str:>20} | {upgrade.description}")
 
-        print("=" * 95)
+        print("=" * 80)
         print(f"Current Cookie Count: {format_cookies(self.engine.cookies)}")
         return True
 
